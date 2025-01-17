@@ -1,3 +1,9 @@
+/*
+Full name:    Eric Cheung
+Student ID:   301125805
+Computing-id: hccheung
+Lab Section:  CMPT 125 D102
+*/
 #ifndef ALIST_H
 #define ALIST_H
 
@@ -10,7 +16,7 @@ class AList
 public:
   AList()
   {
-    theCapacity = 10;
+    theCapacity = 12;
     objects = new Object[theCapacity];
     theSize = 0;
     left = 0;  // array index of location just before the left-most list element
@@ -23,9 +29,7 @@ public:
   }
 
   bool empty() const { return size() == 0; }
-
   int size() const { return theSize; }
-
   void clear()
   {
     // remove all list contents
@@ -38,89 +42,47 @@ public:
 
   // Operations
 
-  // increase the capacity of the list
-  void _expandCapacity()
-  {
-    // Check if the list have more than 1 space left.
-    // If so, no expansion is needed.
-    if (theCapacity - 1 > theSize)
-      return;
-
-    // Allocate space for new array
-    Object *temp = new Object[theCapacity * 2];
-
-    // Case when the array is not wrapped around
-    if (left < right)
-    {
-      for (int i = left + 1; i < right; i++)
-        temp[i] = objects[i];
-    }
-    // Case when the array is wrapped around, 
-    // i.e. left comes after the right.
-    else
-    {
-      // Copy items over from left to the end of the old array
-      for (int i = left + 1; i < theCapacity; i++)
-        temp[i + theCapacity] = objects[i];
-        
-      // Copy items over from the begining of the old array to right
-      for (int i = 0; i < right; i++)
-        temp[i] = objects[i];
-    }
-
-    // delete current objects
-    delete objects;
-
-    // set temp to objects
-    objects = temp;
-
-    // update theCapacity
-    left = left + theCapacity;
-    theCapacity *= 2;
-  }
+  // Assumption for addLeft and addRight:
+  // The user is aware that adding an item
+  // to a full list will lead to errors.
+  // In this implementation, we simply overwrite existing values.
 
   void addLeft(const Object x) // Insert a new object at the left end
   {
     // Implement this....
-    _expandCapacity();
-    theSize++;
+    ++theSize;
     objects[left] = x;
-    // add theCapacity as an offset to ensure left - 1 is positive
-    left = (left + theCapacity - 1) % theCapacity;
+    left = (left - 1 + theCapacity) % theCapacity;
   }
 
   void addRight(const Object x) // Insert a new object at the right end
   {
-    _expandCapacity();
-    theSize++;
+    ++theSize;
     objects[right] = x;
     right = (right + 1) % theCapacity;
   }
 
+  // Assumption for removeRight and removeLeft:
+  // The user is aware that removing an item
+  // from a empty list will lead to errors.
+  // In this implementation, we handle it returning the value at
+  // (right - 1 + theCapacity) % theCapacity for removeRight, and
+  // (left+ 1) % theCapacity for  removeLeft.
+
   Object removeRight() // Remove and return the object at the right end
   {
     // Implement this
-    // If size is zero, throw error
-    if (theSize == 0)
-      throw 1;
-
-    theSize--;
-    // There is a possibility that right - 1 is negative,
-    // which make the modulus result incorrect
-    // Therefore we must ensure right is a positive number
-    // by adding theCapacity as a offset.
-    right = right - 1 < 0 ? (right - 1 + theCapacity) % theCapacity : (right - 1);
+    // To ensure we do not mod a negative value,
+    // we add theCapacity to right - -1 as a offset.
+    --theSize;
+    right = (right - 1 + theCapacity) % theCapacity;
     return objects[right];
   }
 
   Object removeLeft() // Remove and return the object at the left end
   {
     // Implement this
-    // If size is zero, throw error
-    if (theSize == 0)
-      throw 1;
-
-    theSize--;
+    --theSize;
     left = (left + 1) % theCapacity;
     return objects[left];
   }
@@ -128,15 +90,11 @@ public:
   void display() const // print out the contents of the AList
   {
     // Implement this.
-    int current = (left + 1) % theCapacity;
-    int count = theSize;
-    while (count > 0)
-    {
-      cout << objects[current] << ' ';
-      current = (current + 1) % theCapacity;
-      count--;
-    }
-    cout << endl;
+    cout << "The contents of Alist:\n"
+         << "theSize: " << theSize << "\n"
+         << "left: " << left << "\n"
+         << "right: " << right << "\n"
+         << "theCapacity: " << theCapacity << "\n";
   }
 
   void ddisplay() const // print out the contents of the objects
@@ -144,15 +102,12 @@ public:
   // correctness.
   {
     // Implement this.
-    cout << "============================" << endl;
-    cout << "theSize: " << theSize << endl;
-    cout << "theCapacity: " << theCapacity << endl;
-    cout << "left: " << left << endl;
-    cout << "right: " << right << endl;
-
-    cout << "display objects:" << endl;
-    display();
-    cout << "============================" << endl;
+    cout << "The contents of the objects array: <";
+    for (int i = 0; i < theCapacity; i++)
+    {
+      cout << objects[i]
+           << ((i == theCapacity - 1) ? ">\n" : ", ");
+    }
   }
 
 private:
