@@ -2,7 +2,14 @@
 Full name:    Eric Cheung
 Student ID:   301125805
 Computing-id: hccheung
-Lab Section:  CMPT 125 D102
+
+Copyright Notice:
+This code is part of the assignment 1b for CSPT 225, Spring 2025.
+Unauthorized copying or distribution is prohibited.
+
+Purpose of this file:
+A test program that demonstrates the correctness of 
+an implementation of the AList class
 
 It is assumed that the program user is aware 
 of the item capacity of Alist and doing so will lead to errors.
