@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
 {
     AList<int> list; // Create an empty list
 
-    // Capacity overflow should trigger assertion failure.
+    // Capacity overflow should trigger assertion alert.
     list.removeRight();
     
     return 0;

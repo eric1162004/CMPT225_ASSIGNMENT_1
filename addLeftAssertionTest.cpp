@@ -21,7 +21,7 @@ int main(int argc, char const *argv[])
     for (size_t i = 0; i < CAPACITY; i++)
         list.addLeft(i);
 
-    // Capacity overflow should trigger assertion failure.
+    // Capacity overflow should trigger assertion alert.
     list.addLeft(CAPACITY + 1);
     
     return 0;

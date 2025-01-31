@@ -11,7 +11,8 @@ Purpose of this file:
 This file implements the AList class, a circular array-based
 list supporting operations including addLeft, addRight, deleteLeft
 and deleteRight. The AList class has a fixed maximum capacity of 12.
-Behavior is undefined if this limit is exceeded.
+This class does not do bound check. Behavior is undefined if size 
+exceeds the capacity or below zero.
 
 Assertions are used for debugging, and test programs
 are included to verify functionality.
@@ -56,14 +57,7 @@ public:
     theSize = 0;
   }
 
-  // A helper to verifies if an index is
-  // within the bound of the internal array
-  bool _isIndexWithArrayBound(int index) const
-  {
-    return index >= 0 && index < theCapacity;
-  }
-
-  void assertOrPrintErrorMsg(bool assertion, string msg)
+  void assertOrError(bool assertion, string msg)
   {
     if (!assertion)
     {
@@ -81,32 +75,34 @@ public:
 
   void addLeft(const Object x) // Insert a new object at the left end
   {
-    // Precondition: the list should not be full.
-    assertOrPrintErrorMsg(full() != true,
-                "Asserted: Cannot addLeft to a full list.");
+    // Precondition: The list should not be full before addLeft.
+    assertOrError(full() != true,
+                          "Assertion Alert: The list should not be full before addLeft.");
+    int preSize = theSize;
 
     ++theSize;
     objects[left] = x;
     left = (left - 1 + theCapacity) % theCapacity;
 
-    // Postcondition: left should be within the array bound
-    assertOrPrintErrorMsg(_isIndexWithArrayBound(left),
-                "Asserted: The left index is out of bound.");
+    // Postcondition: Size should increment after addLeft
+    assertOrError(preSize + 1 == theSize,
+                          "Assertion Alert: Size should increment after addLeft.");
   }
 
   void addRight(const Object x) // Insert a new object at the right end
   {
-    // Precondition: the list should not be full.
-    assertOrPrintErrorMsg(full() != true,
-                "Asserted: Cannot addRight to a full list.");
+    // Precondition: The list should not be full before addRight.
+    assertOrError(full() != true,
+                          "Assertion Alert: The list should not be full before addRight.");
+    int preSize = theSize;
 
     ++theSize;
     objects[right] = x;
     right = (right + 1) % theCapacity;
 
-    // Postcondition: right should be within the array bound
-    assertOrPrintErrorMsg(_isIndexWithArrayBound(right),
-                "Asserted: The right index is out of bound.");
+    // Postcondition: Size should increment after addRight.
+    assertOrError(preSize + 1 == theSize,
+                          "Assertion Alert: Size should increment after addRight.");
   }
 
   // Assumption for removeRight and removeLeft:
@@ -118,34 +114,36 @@ public:
 
   Object removeLeft() // Remove and return the object at the left end
   {
-    // Precondition: the list should not be empty.
-    assertOrPrintErrorMsg(empty() != true,
-                "Asserted: Cannot removeLeft from a empty list.");
+    // Precondition: The list should not be empty before removeLeft.
+    assertOrError(empty() != true,
+                          "Assertion Alert: The list should not be empty before removeLeft.");
+    int preSize = theSize;
 
     --theSize;
     left = (left + 1) % theCapacity;
 
-    // Postcondition: left should be within the array bound
-    assertOrPrintErrorMsg(_isIndexWithArrayBound(left),
-                "Asserted: The left index is out of bound.");
+    // Postcondition: Size should decrement after removeLeft.
+    assertOrError(theSize + 1 == preSize,
+                          "Assertion Alert: Size should decrement after removeLeft.");
 
     return objects[left];
   }
 
   Object removeRight() // Remove and return the object at the right end
   {
-    // Precondition: the list should not be empty.
-    assertOrPrintErrorMsg(empty() != true,
-                "Asserted: Cannot removeRight from a empty list.");
+    // Precondition: The list should not be empty before removeRight.
+    assertOrError(empty() != true,
+                          "Assertion Alert: The list should not be empty before removeRight.");
+    int preSize = theSize;
 
     // To ensure we do not mod a negative value,
     // we add theCapacity to right - -1 as a offset.
     --theSize;
     right = (right - 1 + theCapacity) % theCapacity;
 
-    // Postcondition: right should be within the array bound
-    assertOrPrintErrorMsg(_isIndexWithArrayBound(right),
-                "Asserted: The right index is out of bound.");
+    // Postcondition: Size should decrement after removeRight.
+    assertOrError(theSize + 1 == preSize,
+                          "Assertion Alert: Size should decrement after removeRight.");
 
     return objects[right];
   }

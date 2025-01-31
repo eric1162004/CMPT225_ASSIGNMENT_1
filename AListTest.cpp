@@ -8,10 +8,10 @@ This code is part of the assignment 1b for CSPT 225, Spring 2025.
 Unauthorized copying or distribution is prohibited.
 
 Purpose of this file:
-A test program that demonstrates the correctness of 
+A test program that demonstrates the correctness of
 an implementation of the AList class
 
-It is assumed that the program user is aware 
+It is assumed that the program user is aware
 of the item capacity of Alist and doing so will lead to errors.
 
 Therefore, this test suite does not test the following cases:
@@ -30,7 +30,7 @@ void printTestResults(int condition, string message)
          << ":\t" << message << endl;
 }
 
-// addRight(i) should increase AList size by 1
+// addRight() should increase AList size by 1
 void addRightTest()
 {
     AList<int> myList;
@@ -45,7 +45,7 @@ void addRightTest()
     }
 
     printTestResults(isValid,
-                     "addRight(i) should increase AList size by 1;");
+                     "addRight() should increase AList size by 1;");
 }
 
 // addLeft(i) should increase AList size by 1
@@ -64,6 +64,40 @@ void addLeftTest()
 
     printTestResults(isValid,
                      "addLeft() should add one element at a time");
+}
+
+// Test adding to the right and left alternately
+void mixedAddTest()
+{
+    AList<int> myList;
+    bool isSizeValid = true;
+    bool isOrderValid = true;
+
+    // Add 3 items to the list in a mixed order
+    myList.addLeft(10);  // List: 10
+    isSizeValid = (myList.size() == 1);
+
+    myList.addRight(20); // List: 10, 20
+    isSizeValid = isSizeValid && (myList.size() == 2);
+
+    myList.addLeft(30);  // List: 30, 10, 20
+    isSizeValid = isSizeValid && (myList.size() == 3);
+
+    // Verify the contents of the list using removeLeft()
+    int firstItem = myList.removeLeft(); // Should remove 30
+    isOrderValid = (firstItem == 30);
+
+    int secondItem = myList.removeLeft(); // Should remove 10
+    isOrderValid = isOrderValid && (secondItem == 10);
+
+    int thirdItem = myList.removeLeft(); // Should remove 20
+    isOrderValid = isOrderValid && (thirdItem == 20);
+
+    // Print test results
+    printTestResults(isSizeValid,
+        "addLeft() and addRight() should increase Alist size by 1.");
+    printTestResults(isOrderValid,
+        "addLeft() and addRight() should add items in the correct order.");
 }
 
 // empty() should return 1 when the list is empty.
@@ -146,6 +180,45 @@ void removeLeftTest()
                      "the Left end of the list.");
 }
 
+// Test removing to the right and left alternately
+void mixedRemoveTest()
+{
+    AList<int> myList;
+    bool isSizeValid = true;
+    bool isItemValid = true;
+
+    // Add 3 items to the list
+    myList.addLeft(10);  // List: 10
+    isSizeValid = (myList.size() == 1);
+
+    myList.addRight(20); // List: 10, 20
+    isSizeValid = isSizeValid && (myList.size() == 2);
+
+    myList.addLeft(30);  // List: 30, 10, 20
+    isSizeValid = isSizeValid && (myList.size() == 3);
+
+    // Remove from the left
+    int removedLeft = myList.removeLeft(); // Should remove 30
+    isItemValid = (removedLeft == 30);
+    isSizeValid = isSizeValid && (myList.size() == 2); // List: 10, 20
+
+    // Remove from the right
+    int removedRight = myList.removeRight(); // Should remove 20
+    isItemValid = isItemValid && (removedRight == 20);
+    isSizeValid = isSizeValid && (myList.size() == 1); // List: 10
+
+    // Final removal from the left
+    int finalRemoved = myList.removeLeft(); // Should remove 10
+    isItemValid = isItemValid && (finalRemoved == 10);
+    isSizeValid = isSizeValid && (myList.size() == 0); // List: empty
+
+    // Print test results
+    printTestResults(isSizeValid,
+        "removeLeft() and removeRight() should decrease Alist size by 1.");
+    printTestResults(isItemValid,
+        "removeLeft() and removeRight() should return the correct removed items.");
+}
+
 // Testing for size()
 void sizeTest()
 {
@@ -208,9 +281,11 @@ int main()
 {
     addRightTest();
     addLeftTest();
+    mixedAddTest();
     emptyTest();
     removeRightTest();
     removeLeftTest();
+    mixedRemoveTest();
     sizeTest();
     clearTest();
     return 0;

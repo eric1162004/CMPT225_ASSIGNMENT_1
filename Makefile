@@ -7,9 +7,9 @@
 # Unauthorized copying or distribution is prohibited.
 
 # Purpose of this file:
-# Compiles AListTest.cpp
-# Compiles assertion tests for AListTestRun
-# Includes make clean instruciton
+# Compiles AListTest.cpp - make all 
+# Compiles assertion tests for AListTestRun - make run
+# Includes make clean instruciton - make clean
 
 CXX = g++ # Use C++ compiler
 CXXFLAGS = -std=c++11 -Wall -g
@@ -23,20 +23,21 @@ TEST_EXES = $(TEST_SRCS:.cpp=) # Replace .cpp to empty string
 	$(CXX) $(CXXFLAGS) -o $@ $<
 	
 all: AListTest
+run: AListTestRun
 
 # If assertion return non-zero exit code, 
 # it means the assertion has passed.
 AListTestRun: AListTest $(TEST_EXES)
-	@for test in $(TEST_EXES); do \
+	@ echo ""; \
+	for test in $(TEST_EXES); do \
 		echo "============= Running $$test ============="; \
-		if ! ./$$test 2>> /dev/null; then \
-			echo "Assertion Test PASSED";\
-			exit_code=0; \
+		if ! ./$$test; then \
+			echo "\033[32mPASS\033[0m Assertion Test";\
 		else \
-			echo "Assertion Test FAILED"; \
-			exit_code=1; \
+			echo "\033[31mFAIL\033[0m Assertion Test"; \
 		fi; \
 	done; \
+	echo ""; \
 	echo "============= Clean up ============="; \
 	make clean; \
 
